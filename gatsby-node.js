@@ -1,40 +1,37 @@
 const path = require(`path`);
-const { createFilePath } = require(`gatsby-source-filesystem`)
-
-exports.onCreateNode = ({ node, getNode, actions }) => {
-	const { createNodeField } = actions
-	if(node.internal.type===`MarkdownRemark`){
-		const slug = createFilePath({ node, getNode })
-
-		createNodeField({
-			node,
-			name: `slug`,
-			value: slug
-		})
-	}
-}
 
 exports.createPages = ({ graphql, actions }) => {
 	const { createPage } = actions
+
+	const recipePage = path.resolve(`./src/templates/blog-post-contentful.js`)
 	return graphql(`
 	{
-	  allMarkdownRemark {
-	    edges {
-	      node {
-	        fields {
-	          slug
-	        }
-	      }
-	    }
-	  }
+		allContentfulRecipe {
+			edges {
+				node {
+					slug
+					title
+				}
+			}
+		}
 	}
 	`).then(result => {
-		result.data.allMarkdownRemark.edges.forEach(({node}) => {
+		if (result.errors) {
+			throw result.errors
+		}
+		const recipes = result.data.allContentfulRecipe.edges
+
+		recipes.forEach((recipe, index) => {
+			const previous = index === recipes.length -1 ? null : recipes[index + 1].node
+			const next = index === 0 ? null : recipes[index-1].node
+
 			createPage({
-				path: node.fields.slug,
-				component: path.resolve(`./src/templates/blog-post.js`),
+				path: recipe.node.slug,
+				component: recipePage,
 				context: {
-					slug: node.fields.slug
+					slug: recipe.node.slug,
+					previous,
+					next,
 				}
 			})
 		})

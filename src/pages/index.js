@@ -3,60 +3,69 @@ import { graphql, Link } from "gatsby"
 import styled from "styled-components"
 
 import Layout from "../components/layout"
-import Image from "../components/image"
 import SEO from "../components/seo"
 
-const BlogLink = styled(Link)`
+const Post = styled.div`
+  display: flex;
+`
+
+const PostImage = styled.div`
+  flex: 25%;
+  margin-right: 1rem;
+`
+
+const PostText = styled.div`
+  flex: 75%;
+`
+
+const RecipeLink = styled(Link)`
   text-decoration: none;
 `
 
-const BlogTitle =styled.h3`
+const RecipeTitle =styled.h3`
   margin-bottom: 20px;
-  color: blue;
+  color: black;
 `
 
-export default ({ data }) => {
-  console.log(data)
-  return (
-  <Layout>
-    <SEO title="Home" />
-    <div>
-      <h1>Przepisy</h1>
-      <h4>{data.allMarkdownRemark.totalCount}</h4>
-      {
-        data.allMarkdownRemark.edges.map(({node}) =>
-          <div key={node.id}>
-            <BlogLink to={node.fields.slug}>
-              <BlogTitle>
-                { node.frontmatter.title } - { node.frontmatter.date }
-              </BlogTitle>
-            </BlogLink>
-          <p>{node.excerpt}</p>
-          </div>
-        )
-      }
-    </div>
-  </Layout>
-  )
+class BlogIndex extends React.Component {
+  render () {
+    const { data } = this.props
+    const recipes = data.allContentfulRecipe.edges
+    return (
+      <Layout>
+        <SEO title="Home" />
+        <div>
+          <h1>Przepisy</h1>
+          {recipes.map(({node}) =>
+              <Post key={node.slug}>
+                <RecipeLink to={node.slug}>
+                  <RecipeTitle>
+                    { node.title }
+                  </RecipeTitle>
+                </RecipeLink>
+              </Post>
+          )}
+        </div>
+      </Layout>
+    )
+  }
 }
+
+export default BlogIndex
 
 export const query = graphql`
   query {
-    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
-      totalCount
+    site {
+      siteMetadata {
+        title
+      }
+    }
+    allContentfulRecipe {
       edges {
         node {
-          id
-          frontmatter {
-            date
-            description
-            title
-          }
-          fields {
-            slug
-          }
-          html
-          excerpt
+          title
+          author
+          slug
         }
       }
     }
