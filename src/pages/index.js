@@ -1,5 +1,6 @@
 import React from "react"
 import { graphql, Link } from "gatsby"
+import Img from "gatsby-image"
 import styled from "styled-components"
 
 import Layout from "../components/layout"
@@ -7,15 +8,17 @@ import SEO from "../components/seo"
 
 const Post = styled.div`
   display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
 `
 
 const PostImage = styled.div`
-  flex: 25%;
+  width: 50%;
   margin-right: 1rem;
 `
 
 const PostText = styled.div`
-  flex: 75%;
+  width: 50%;
 `
 
 const RecipeLink = styled(Link)`
@@ -42,6 +45,9 @@ class BlogIndex extends React.Component {
                   <RecipeTitle>
                     { node.title }
                   </RecipeTitle>
+                  <PostImage>
+                   {node.image ? <Img fluid= {node.image[0].fluid} /> : null} 
+                  </PostImage>
                 </RecipeLink>
               </Post>
           )}
@@ -66,6 +72,14 @@ export const query = graphql`
           title
           author
           slug
+          childContentfulRecipePreparationRichTextNode {
+            json 
+          }
+          image {
+            fluid {
+              ...GatsbyContentfulFluid
+            }
+          }
         }
       }
     }

@@ -1,6 +1,13 @@
 import React from 'react';
 import { graphql, Link } from 'gatsby';
 import Layout from '../components/layout';
+import Img from "gatsby-image"
+import styled from "styled-components"
+
+const PostImage = styled.div`
+  width: 50%;
+  margin-right: 1rem;
+`
 
 class RecipeContentfulTemplate extends React.Component {
 	render () {
@@ -15,6 +22,9 @@ class RecipeContentfulTemplate extends React.Component {
 				<h1>{recipe.title}</h1>
 				<h4>autor: {recipe.author}</h4>
 			</div>
+			<PostImage>
+                {recipe.image ? <Img fluid= {recipe.image[0].fluid} /> : null} 
+            </PostImage>
 			<h3>Składniki:</h3>
 			<ul>
 				{ingredients.map((ingredient) =>           
@@ -40,6 +50,11 @@ export const pageQuery = graphql`
 			ingredients
 			childContentfulRecipePreparationRichTextNode {
 				json 
+			}
+			image {
+				fluid {
+					...GatsbyContentfulFluid
+				}
 			}
 		}
 	}
