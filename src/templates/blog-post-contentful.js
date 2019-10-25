@@ -47,7 +47,11 @@ export const pageQuery = graphql`
 		contentfulRecipe( slug: { eq: $slug }) {
 			title
 			author
+			createdAt
 			ingredients
+			description {
+            	description
+          	}
 			childContentfulRecipePreparationRichTextNode {
 				json 
 			}
